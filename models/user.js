@@ -12,6 +12,16 @@ const UserSchema = new mongoose.Schema({
     },
     workExperience:{
         type: String,
+    },
+
+    selfieUrl:{
+        type: String,
+    },
+
+    role: {
+        type: String,
+        enum: ['student', 'teacher'],
+        default: 'student',
         required: true, 
     },
 

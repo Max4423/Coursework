@@ -18,13 +18,16 @@ export const register = async (req, res) => {
     fullName:req.body.fullName,
     workExperience:req.body.workExperience,
     avatarUrl:req.body.avatarUrl,
+    selfieUrl:req.body.selfieUrl,
     passwordHash: hash,
-    });
+    role: req.body.role || 'teacher', 
+});
     
     const user = await doc.save();
     
     const token = jwt.sign({
         _id: user._id,
+        role: user.role,
     }, 'secret123',
     {
         expiresIn:'30d',
@@ -41,13 +44,13 @@ export const register = async (req, res) => {
 const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'medcourses.notifications@gmail.com', 
-                pass: 'umghhciqhpbrytgt' 
+                user: 'medcourses.message@gmail.com', 
+                pass: 'ditgplqtpmaamqik' 
             }
         });
-
+ 
         const mailOptions = {
-            from: '<medcourses.notifications@gmail.com>',
+            from: '<medcourses.message@gmail.com>',
             to: req.body.email, 
             subject: 'Успішна реєстрація',
             text: 'Вітаю, ' + req.body.fullName + '. Ви успішно зареєструвалися на сайті медкурсів. Приємного користування сервісом!'
@@ -96,10 +99,11 @@ const token = jwt.sign({
 }
 );
 
-const{passwordHash, ...userData} = user._doc;
+const{passwordHash, role, ...userData} = user._doc;
 
 res.json({
     ... userData, 
+    role,
     token,
 });
 
@@ -131,14 +135,19 @@ export const getMe = async (req, res) => {
     }
 };
 
+
 export const getAllUsers = async (req, res) => {
-    try {
-      const users = await UserModel.find();
-      res.json(users);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        message: 'Не вдалося отримати користувачів',
-      });
-    }
+      try {
+
+          const users = await UserModel.find();
+        res.json(users);
+     } catch (err) {
+          console.error(err);
+        res.status(500).json({
+             message: 'Не вдалося отримати користувачів',
+     });
+     }
   };
+
+
+

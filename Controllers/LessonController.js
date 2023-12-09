@@ -1,4 +1,5 @@
 import LessonModel from '../models/lesson.js';
+import UserModel from '../models/user.js';
 
 export const getAll = async (req, res) => {
 try{
@@ -49,7 +50,7 @@ export const getOne = async (req, res) => {
       }
   
       // Перевірка, чи аутентифікований користувач є творцем уроку
-      if (lesson.user.toString() !== userId && userId !== '65577bbea633b83aab4ce705') {
+      if (lesson.user.toString() !== userId) {
         return res.status(403).json({
           message: 'Ви не маєте дозволу на видалення цього уроку',
         });
@@ -74,27 +75,48 @@ export const getOne = async (req, res) => {
     }
   };
 
-  
-  export const create = async (req, res) => {
-    try {
+
+
+export const create = async (req, res) => {
+  try {
+
+      const userId = req.userId;
+
+
+      const user = await UserModel.findById(userId);
+      const userRole = user ? user.role : null;
+
+    
+      if (userRole !== 'teacher') {
+          return res.status(403).json({
+              message: 'Ви не маєте дозволу на створення уроку',
+          });
+      }
+
+   
       const doc = new LessonModel({
-        title: req.body.title,
-        text: req.body.text,
-        imageUrl: req.body.imageUrl,
-        videoUrl: req.body.videoUrl,
-        user: req.userId,
+          title: req.body.title,
+          text: req.body.text,
+          imageUrl: req.body.imageUrl,
+          videoUrl: req.body.videoUrl,
+          photoUrl: req.body.photoUrl,
+          user: userId,
       });
-  
+
+     
       const lesson = await doc.save();
-  
+
       res.json(lesson);
-    } catch (err) {
+  } catch (err) {
       console.log(err);
       res.status(500).json({
-        message: 'Не вдалось створити урок',
+          message: 'Не вдалось створити урок',
       });
-    }
-  };
+  }
+};
+
+         
+
 
   export const update = async (req, res) => {
     try {
@@ -109,7 +131,7 @@ export const getOne = async (req, res) => {
         });
       }
   
-      // Перевірка, чи аутентифікований користувач є творцем уроку
+    
       if (lesson.user.toString() !== userId) {
         return res.status(403).json({
           message: 'Ви не маєте дозволу на оновлення цього уроку',
@@ -125,6 +147,7 @@ export const getOne = async (req, res) => {
           text: req.body.text,
           imageUrl: req.body.imageUrl,
           videoUrl: req.body.videoUrl,
+          photoUrl: req.body.photoUrl,
           user: userId, 
         },
       );
@@ -135,7 +158,7 @@ export const getOne = async (req, res) => {
     } catch (err) {
       console.log(err);
       res.status(500).json({
-        message: 'Не вдалося оновити урок', 
+        message: 'Не вдалося оновити урок',
       });
     }
-  }; 
+  };

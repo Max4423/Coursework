@@ -8,6 +8,7 @@ export default (req, res, next) => {
       const decoded = jwt.verify(token, 'secret123');
 
       req.userId = decoded._id;
+      req.userRole = decoded.role; // Додавання ролі користувача
       next();
     } catch (e) {
       return res.status(403).json({
@@ -19,4 +20,4 @@ export default (req, res, next) => {
       message: 'Немає доступу',
     });
   }
-};
+}; 

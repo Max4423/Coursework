@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical courses</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: url('MedicalPhoto.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      font-size: 24px;
+      width: 100%;
+      margin: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 50px;
+      width: 300px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    button.register {
+      background-color: #8b4513;
+    }
+
+    main {
+      margin-top: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    Medical courses
+  </header>
+
+  <form method="POST" action="http://localhost:4444/auth/login" id="loginForm">
+    <h2>Вхід</h2>
+    <label for="email_input">Електронна пошта:</label>
+    <input type="email" id="email_input" name="email" required>
+
+    <label for="password_input">Пароль:</label>
+    <input type="password" id="password_input" name="password" required>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+      <button onclick="login()">Увійти</button>
+      <button onclick="redirectToRegisterForm()" class="register">Не маєте аккаунта? Зареєструватись</button>
+    </div>
+  </form>
+
+  <script>
+    async function login() {
+      const form = document.getElementById('loginForm');
+      const formData = new FormData(form);
+      const responseMessage = document.getElementById('responseMessage');
+
+      try {
+        const response = await fetch('http://localhost:4444/auth/login', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          responseMessage.innerHTML = `<p style="color: green;">Успішний вхід. ${data.message}</p>`;
+          console.log(data);
+        } else {
+          if (Array.isArray(data)) {
+            responseMessage.innerHTML = `<p style="color: red;">Помилка входу. ${data.map(error => error.msg).join(', ')}</p>`;
+          } else {
+            responseMessage.innerHTML = `<p style="color: red;">Помилка входу. ${data.message || data}</p>`;
+          }
+          console.error('Помилка відповіді сервера');
+        }
+      } catch (error) {
+        responseMessage.innerHTML = `<p style="color: red;">Помилка при відправці запиту: ${error.message}</p>`;
+        console.error('Помилка при відправці запиту:', error);
+      }
+    }
+
+    function redirectToRegisterForm() {
+      window.location.href = 'RegisterForm.html';
+    }
+  </script>
+</body>
+
+</html>
