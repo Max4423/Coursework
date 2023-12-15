@@ -1,0 +1,439 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Your API Title",
+      "description": "Description of your API"
+    },
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "definitions": {
+      "RegisterRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 5
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 2
+          },
+          "workExperience": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "url"
+          }
+        },
+        "required": ["email", "password", "fullName"]
+      },
+      "LoginRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 5
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "workExperience": {
+            "type": "string"
+          },
+          "selfieUrl": {
+            "type": "string",
+            "format": "url"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["student", "teacher"]
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "url"
+          }
+        }
+      },
+      "LessonResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "type": "string",
+            "format": "url"
+          },
+          "photoUrl": {
+            "type": "string",
+            "format": "url"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "fullName": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "workExperience": {
+                "type": "string"
+              },
+              "selfieUrl": {
+                "type": "string",
+                "format": "url"
+              },
+              "role": {
+                "type": "string",
+                "enum": ["student", "teacher"]
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "url"
+              }
+            }
+          }
+        }
+      },
+      "LessonCreateRequestBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3
+          },
+          "text": {
+            "type": "string",
+            "minLength": 3
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "url"
+          },
+          "videoUrl": {
+            "type": "string",
+            "format": "url"
+          },
+          "photoUrl": {
+            "type": "string",
+            "format": "url"
+          }
+        },
+        "required": ["title", "text"]
+      },
+      "RegisterForLessonRequestBody": {
+        "type": "object",
+        "properties": {
+          "lessonId": {
+            "type": "string"
+          }
+        },
+        "required": ["lessonId"]
+      }
+    },
+    "paths": {
+      "/auth/register": {
+        "post": {
+          "summary": "Register a new user",
+          "tags": ["Authentication"],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/RegisterRequestBody"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User registered successfully",
+              "schema": {
+                "$ref": "#/definitions/UserResponse"
+              }
+            },
+            "400": {
+              "description": "Validation error"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/auth/login": {
+        "post": {
+          "summary": "Login",
+          "tags": ["Authentication"],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/LoginRequestBody"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "schema": {
+                "$ref": "#/definitions/UserResponse"
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/auth/me": {
+        "get": {
+          "summary": "Get current user",
+          "tags": ["User"],
+          "responses": {
+            "200": {
+              "description": "User details",
+              "schema": {
+                "$ref": "#/definitions/UserResponse"
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/user/lessons": {
+        "get": {
+          "summary": "Get lessons for a user",
+          "tags": ["User"],
+          "responses": {
+            "200": {
+              "description": "List of lessons for the user",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/LessonResponse"
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/lessons": {
+        "get": {
+          "summary": "Get all lessons",
+          "tags": ["Lessons"],
+          "responses": {
+            "200": {
+              "description": "List of lessons",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/LessonResponse"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new lesson",
+          "tags": ["Lessons"],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/LessonCreateRequestBody"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Lesson created successfully",
+              "schema": {
+                "$ref": "#/definitions/LessonResponse"
+              }
+            },
+            "400": {
+              "description": "Validation error"
+            },
+            "403": {
+              "description": "Permission denied"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/lessons/{id}": {
+        "get": {
+          "summary": "Get a specific lesson",
+          "tags": ["Lessons"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Lesson details",
+              "schema": {
+                "$ref": "#/definitions/LessonResponse"
+              }
+            },
+            "404": {
+              "description": "Lesson not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a lesson",
+          "tags": ["Lessons"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Lesson deleted successfully"
+            },
+            "403": {
+              "description": "Permission denied"
+            },
+            "404": {
+              "description": "Lesson not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "patch": {
+          "summary": "Update a lesson",
+          "tags": ["Lessons"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/LessonCreateRequestBody"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Lesson updated successfully"
+            },
+            "400": {
+              "description": "Validation error"
+            },
+            "403": {
+              "description": "Permission denied"
+            },
+            "404": {
+              "description": "Lesson not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/auth/registerForLesson": {
+        "post": {
+          "summary": "Register for a lesson",
+          "tags": ["Lessons"],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/RegisterForLessonRequestBody"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully registered for the lesson"
+            },
+            "400": {
+              "description": "Validation error"
+            },
+            "403": {
+              "description": "Permission denied"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      }
+    }
+  }
+  

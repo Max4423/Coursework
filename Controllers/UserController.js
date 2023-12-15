@@ -52,7 +52,7 @@ const transporter = nodemailer.createTransport({
         const mailOptions = {
             from: '<medcourses.message@gmail.com>',
             to: req.body.email, 
-            subject: 'Успішна реєстрація',
+            subject: 'Succesfull register',
             text: 'Вітаю, ' + req.body.fullName + '. Ви успішно зареєструвалися на сайті медкурсів. Приємного користування сервісом!'
         };
 

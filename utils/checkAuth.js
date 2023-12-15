@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+ import jwt from 'jsonwebtoken';
 
 export default (req, res, next) => {
   const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');
@@ -8,7 +8,7 @@ export default (req, res, next) => {
       const decoded = jwt.verify(token, 'secret123');
 
       req.userId = decoded._id;
-      req.userRole = decoded.role; // Додавання ролі користувача
+      req.userRole = decoded.role; 
       next();
     } catch (e) {
       return res.status(403).json({
@@ -21,3 +21,5 @@ export default (req, res, next) => {
     });
   }
 }; 
+
+

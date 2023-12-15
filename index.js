@@ -7,6 +7,10 @@ import * as LessonController from './Controllers/LessonController.js';
 import checkAuth from './utils/checkAuth.js';
 import multer from 'multer';
 import handleValidationErrors from './utils/handleValidationErrors.js';
+
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json' assert { type: 'json' };
+
 mongoose
     .connect(
     'mongodb+srv://miksimmiks:wqNIvgdk4tYkP5wm@cluster0.018qrom.mongodb.net/blog?retryWrites=true&w=majority')
@@ -26,6 +30,8 @@ const storage =  multer.diskStorage({
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 const upload = multer({storage});
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/uploads', express.static('uploads'));
 app.use(express.json());
@@ -53,6 +59,9 @@ app.get('/lessons/:id', LessonController.getOne);
 app.post('/lessons',checkAuth, lessonCreateValidation, handleValidationErrors, LessonController.create);
 app.delete('/lessons/:id',checkAuth, LessonController.remove);
 app.patch('/lessons/:id',checkAuth, lessonCreateValidation, handleValidationErrors, LessonController.update);
+app.post('/auth/registerForLesson', checkAuth, LessonController.registerForLesson);
+
+app.get('/user/lessons', checkAuth, LessonController.getUserLessons);
 
 
 app.listen(4444, (err) => {

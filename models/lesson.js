@@ -16,10 +16,6 @@ const LessonSchema = new mongoose.Schema({
     photoUrl:{
         type: String,
     },
-    // viewCount: {
-    //     type: Number,
-    //     default: 0,
-    // },
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
